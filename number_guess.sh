@@ -1,1 +1,6 @@
 #!/bin/bash
+
+RANDOM_NUMBER=$RANDOM
+
+echo $RANDOM_NUMBER
+
