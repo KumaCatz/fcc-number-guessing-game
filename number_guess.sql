@@ -50,7 +50,8 @@ SET default_table_access_method = heap;
 CREATE TABLE public.users (
     user_id integer NOT NULL,
     username character varying(22) NOT NULL,
-    games_played integer DEFAULT 0
+    games_played integer DEFAULT 0 NOT NULL,
+    number_of_guesses integer
 );
 
 
