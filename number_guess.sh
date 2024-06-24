@@ -23,7 +23,22 @@ MAIN_MENU() {
   echo Enter your username:
   read USERNAME
 
-  USERNAME_RESULT=$($PSQL "$PSQL_FULL_JOIN_ALL_TABLES WHERE username='$USERNAME'")
+  USERNAME_RESULT=$($PSQL "
+    SELECT
+      u.user_id AS users_user_id,
+      u.username,
+      u.games_played,
+      g.game_id,
+      g.number_of_guesses
+    FROM
+      users u
+    FULL JOIN
+      games g ON u.user_id = g.user_id
+    WHERE username='$USERNAME'
+    ORDER BY
+        g.number_of_guesses
+    LIMIT 1
+  ")
 
   if [[ -z $USERNAME_RESULT ]]
   then
@@ -33,7 +48,7 @@ MAIN_MENU() {
     echo $USERNAME_RESULT
     echo "$USERNAME_RESULT" | while IFS='|' read USER_ID USERNAME GAMES_PLAYED GAME_ID NUMBER_OF_GUESSES
     do
-      echo -e "\nWelcome back, $USERNAME! You have played $GAMES_PLAYED games, and your best game took 0 guesses."
+      echo -e "\nWelcome back, $USERNAME! You have played $GAMES_PLAYED games, and your best game took $NUMBER_OF_GUESSES guesses."
     done
   fi
 
@@ -60,7 +75,14 @@ MAIN_MENU() {
         ((NUMBER_OF_GUESSES++))
         GUESSING_LOOP "$USER_GUESS"
     else
+      USER_ID=$($PSQL "SELECT user_id FROM users WHERE username='$USERNAME'")
+
+      ADD_GAME_END_RESULT=$($PSQL "INSERT INTO games (user_id, number_of_guesses) VALUES ($USER_ID, $NUMBER_OF_GUESSES)")
+
+      ADD_TO_GAMES_PLAYED_RESULT=$($PSQL "UPDATE users SET games_played = games_played + 1 WHERE user_id = $USER_ID")
+
       echo You guessed it in $NUMBER_OF_GUESSES tries. The secret number was $SECRET_NUMBER. Nice job!
+      exit 0
     fi
   }
 
