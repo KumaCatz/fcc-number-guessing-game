@@ -2,7 +2,8 @@
 
 PSQL="psql --username=freecodecamp --dbname=number_guess -t --no-align -c"
 
-SECRET_NUMBER=$(shuf -i 1-1000 -n 1)
+# SECRET_NUMBER=$(shuf -i 1-1000 -n 1)
+SECRET_NUMBER=$(( RANDOM % 1000 + 1 ))
 
 PSQL_FULL_JOIN_ALL_TABLES="
   SELECT
