@@ -42,7 +42,12 @@ MAIN_MENU() {
   NUMBER_OF_GUESSES=1
 
   GUESSING_LOOP() {
-    if [[ $1 -lt $SECRET_NUMBER ]]
+    if [[ ! $1 =~ ^-?[0-9]+$ ]]
+      then
+        echo That is not an integer, guess again:
+        read USER_GUESS
+        GUESSING_LOOP "$USER_GUESS"
+    elif [[ $1 -lt $SECRET_NUMBER ]]
       then
         echo "It's higher than that, guess again:"
         read USER_GUESS
